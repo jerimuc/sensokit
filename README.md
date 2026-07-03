@@ -5,146 +5,307 @@
 ![Language](https://img.shields.io/badge/Language-C%2B%2B-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Active-success)
 
-A portable environmental sensing platform based on the **Arduino MKR NB
-1500** for collecting air quality and environmental data together with
-GPS coordinates and transmitting the measurements via **NB-IoT/LTE-M**.
+A portable environmental sensing platform based on the **Arduino MKR NB 1500** for collecting air quality and environmental data together with GPS coordinates and transmitting the measurements via **NB-IoT/LTE-M**.
 
-Designed for mobile environmental monitoring, research projects, and
-smart city applications.
+Designed for mobile environmental monitoring, research projects, and smart city applications.
 
-------------------------------------------------------------------------
+---
 
 ## Table of Contents
 
--   [Features](#features)
--   [Hardware](#hardware)
--   [Sensors](#sensors)
--   [Software Requirements](#software-requirements)
--   [Installation](#installation)
--   [Project Structure](#project-structure)
--   [Power Management](#power-management)
--   [Status LED](#status-led)
--   [Data Format](#data-format)
--   [Configuration](#configuration)
--   [Building](#building)
--   [Future Improvements](#future-improvements)
--   [License](#license)
--   [Acknowledgements](#acknowledgements)
+- [Features](#features)
+- [Hardware](#hardware)
+- [Sensors](#sensors)
+- [Software Requirements](#software-requirements)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [System Overview](#system-overview)
+- [Power Management](#power-management)
+- [Status LED](#status-led)
+- [Data Format](#data-format)
+- [Configuration](#configuration)
+- [Building](#building)
+- [Future Improvements](#future-improvements)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-------------------------------------------------------------------------
+---
 
-# Features
+## Features
 
--   GPS position tracking
--   Automatic sensor detection
--   NB-IoT/LTE-M data transmission
--   Battery monitoring
--   Deep sleep mode
--   NeoPixel status indication
--   Automatic modem shutdown
--   Automatic GPS standby mode
--   GeoJSON data generation
--   Designed for low-power battery operation
+- GPS position tracking
+- Automatic sensor detection
+- NB-IoT/LTE-M data transmission
+- Battery monitoring
+- Deep sleep mode
+- NeoPixel status indication
+- Automatic modem shutdown
+- Automatic GPS standby mode
+- GeoJSON data generation
+- Designed for low-power battery operation
 
-------------------------------------------------------------------------
+---
 
-# Hardware
+## Hardware
 
-## Controller
+### Controller
 
--   Arduino MKR NB 1500
+- Arduino MKR NB 1500
 
-## Communication
+### Communication
 
--   Integrated NB-IoT / LTE-M modem
--   GPS receiver (SparkFun I²C GPS / PA1010D compatible)
+- Integrated NB-IoT / LTE-M modem
+- GPS receiver, SparkFun I²C GPS / PA1010D compatible
 
-## Additional Components
+### Additional Components
 
--   Adafruit TCA9548A I²C Multiplexer
--   Adafruit NeoPixel
--   Illuminated push button
--   LiPo Battery
+- Adafruit TCA9548A I²C Multiplexer
+- Adafruit NeoPixel
+- Illuminated push button
+- LiPo battery
 
-------------------------------------------------------------------------
+---
 
-# Sensors
+## Sensors
 
-  Sensor                              Measurement
-  ----------------------------------- ----------------------------
-  Sensirion SCD41                     CO₂, Temperature, Humidity
-  ScioSense ENS160                    AQI, TVOC
-  DFRobot SEN0321                     Ozone
-  PCB Artists I²C Sound Level Meter   Noise Level
+| Sensor | Measurement |
+|---|---|
+| Sensirion SCD41 | CO₂, Temperature, Humidity |
+| ScioSense ENS160 | AQI, TVOC |
+| DFRobot SEN0321 | Ozone |
+| PCB Artists I²C Sound Level Meter | Noise Level |
 
-------------------------------------------------------------------------
+---
 
-# Software Requirements
+## Software Requirements
 
 Install the following Arduino libraries:
 
--   MKRNB
--   TinyGPS++
--   Adafruit GPS
--   SparkFun I²C GPS Arduino Library
--   Wire
--   ArduinoLowPower
--   Adafruit NeoPixel
--   DFRobot_OzoneSensor
--   ScioSense ENS160
--   Sensirion I²C SCD4x
+- MKRNB
+- TinyGPS++
+- Adafruit GPS
+- SparkFun I²C GPS Arduino Library
+- Wire
+- ArduinoLowPower
+- Adafruit NeoPixel
+- DFRobot_OzoneSensor
+- ScioSense ENS160
+- Sensirion I²C SCD4x
 
 Most libraries are available through the Arduino Library Manager.
 
-------------------------------------------------------------------------
+---
 
-# Installation
+## Installation
 
-``` bash
+Clone this repository:
+
+```bash
 git clone https://github.com/yourusername/sensokit.git
 ```
 
-Open `sensokit_code.ino`, install the required libraries, select
-**Arduino MKR NB 1500**, and upload the sketch.
+Open the Arduino sketch in the Arduino IDE:
 
-------------------------------------------------------------------------
+```text
+sensokit_code.ino
+```
 
-# Project Structure
+Then:
 
-``` text
+1. Install all required libraries.
+2. Connect the Arduino MKR NB 1500.
+3. Select the correct board and serial port.
+4. Compile and upload the sketch.
+
+Recommended Arduino IDE settings:
+
+- **Board:** Arduino MKR NB 1500
+- **Port:** Your Arduino USB/COM port
+
+---
+
+## Project Structure
+
+```text
 .
 ├── sensokit_code.ino
 ├── README.md
 └── LICENSE
 ```
 
-------------------------------------------------------------------------
+---
 
-# Power Management
+## System Overview
 
--   Automatic modem shutdown
--   GPS standby mode
--   Deep sleep mode
--   Push-button wake-up
--   Battery voltage monitoring
--   Automatic shutdown at critical battery voltage
+```text
+                 Arduino MKR NB 1500
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+         NB-IoT Modem           NeoPixel LED
+             │
+       Cellular Network
 
-------------------------------------------------------------------------
+             │
+           I²C Bus
+             │
+      TCA9548A Multiplexer
+             │
+ ┌──────┬──────┬──────┬──────┐
+ │      │      │      │
+GPS   SCD41  ENS160 Ozone
+              │
+      Sound Level Meter
+```
 
-# Status LED
+The firmware uses the TCA9548A I²C multiplexer to select sensor channels and detect connected devices. Sensor values are collected periodically, combined with GPS coordinates, formatted as GeoJSON, and sent to the configured DATAhub endpoint.
 
-  Color            Status
-  ---------------- ---------------
-  🟡 Yellow        Startup
-  🟢 Green         Running
-  🟢 Light Green   Measuring
-  🔵 Blue          GPS Error
-  🟣 Magenta       Network Error
-  🔴 Red           Low Battery
-  ⚫ Off           Sleep Mode
+---
 
-------------------------------------------------------------------------
+## Power Management
 
-# License
+The firmware is designed for battery-powered operation.
 
-MIT License unless stated otherwise.
+Power-saving features include:
+
+- Automatic modem shutdown after transmission
+- GPS standby mode
+- Deep sleep mode
+- Wake-up using the push button
+- Battery voltage monitoring
+- Low battery indication
+- Automatic shutdown at critical battery voltage
+
+---
+
+## Status LED
+
+The NeoPixel LED indicates the current device state.
+
+| Color | Status |
+|---|---|
+| 🟡 Yellow | Startup |
+| 🟢 Green | Running |
+| 🟢 Light Green | Measuring |
+| 🔵 Blue | GPS Error |
+| 🟣 Magenta | Network Error |
+| 🔴 Red | Low Battery |
+| ⚫ Off | Sleep Mode |
+
+---
+
+## Data Format
+
+Sensor data are transmitted as GeoJSON.
+
+Example:
+
+```json
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      16.391135,
+      48.142748
+    ]
+  },
+  "properties": {
+    "Noise": [58.4, "dB"],
+    "CO2": [540, "ppm"],
+    "Temperature": [22.4, "°C"],
+    "Humidity": [45.2, "%"],
+    "AQI": [2, "AQI"],
+    "TVOC": [132, "ppb"],
+    "Ozone": [24, "ppb"]
+  }
+}
+```
+
+The firmware also sends status information, including battery level, battery voltage, GPS fix state, and online status.
+
+---
+
+## Configuration
+
+Before uploading the firmware, configure the following values in the sketch:
+
+- DATAhub server URL
+- API endpoints
+- Authentication/source token
+- APN or cellular network settings, if required
+- Sampling interval
+- Data upload interval
+- Sensor configuration
+- Battery thresholds
+
+Important configuration values include:
+
+```cpp
+char server[] = "your-server.example.com";
+char pathdata[] = "/api/sensordata/";
+char pathstatus[] = "/api/sensorstatus/";
+int port = 80;
+```
+
+Replace these values with the correct endpoint and token information for your deployment.
+
+---
+
+## Building
+
+Compile and upload the sketch using the Arduino IDE.
+
+The firmware has been tested with:
+
+- Arduino IDE 2.x
+- Arduino MKR NB 1500
+
+Basic build steps:
+
+1. Open the `.ino` file.
+2. Install all dependencies.
+3. Select **Arduino MKR NB 1500** as the board.
+4. Select the correct serial port.
+5. Click **Verify**.
+6. Click **Upload**.
+
+---
+
+## Future Improvements
+
+Possible future improvements include:
+
+- HTTPS communication
+- MQTT support
+- OTA firmware updates
+- SD card logging
+- Remote configuration
+- Automatic sensor calibration
+- Web dashboard integration
+- Improved diagnostics and error reporting
+- More detailed sensor metadata in the transmitted payload
+
+---
+
+## License
+
+This project is released under the **MIT License** unless stated otherwise.
+
+Update this section if your repository uses another license.
+
+---
+
+## Acknowledgements
+
+This project uses hardware and software from:
+
+- Arduino
+- Adafruit
+- SparkFun
+- Sensirion
+- ScioSense
+- DFRobot
+- PCB Artists
+
+Special thanks to everyone contributing to open-source hardware and environmental sensing technologies.
