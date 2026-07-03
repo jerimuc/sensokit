@@ -25,9 +25,7 @@ Designed for mobile environmental monitoring, research projects, and smart city 
 - [Data Format](#data-format)
 - [Configuration](#configuration)
 - [Building](#building)
-- [Future Improvements](#future-improvements)
 - [License](#license)
-- [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -272,40 +270,9 @@ Basic build steps:
 
 ---
 
-## Future Improvements
-
-Possible future improvements include:
-
-- HTTPS communication
-- MQTT support
-- OTA firmware updates
-- SD card logging
-- Remote configuration
-- Automatic sensor calibration
-- Web dashboard integration
-- Improved diagnostics and error reporting
-- More detailed sensor metadata in the transmitted payload
-
----
-
 ## License
 
 This project is released under the **MIT License** unless stated otherwise.
 
 Update this section if your repository uses another license.
 
----
-
-## Acknowledgements
-
-This project uses hardware and software from:
-
-- Arduino
-- Adafruit
-- SparkFun
-- Sensirion
-- ScioSense
-- DFRobot
-- PCB Artists
-
-Special thanks to everyone contributing to open-source hardware and environmental sensing technologies.
